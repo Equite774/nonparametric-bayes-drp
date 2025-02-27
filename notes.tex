@@ -84,7 +84,7 @@ The key will always be \[p(\theta|y)=\frac{p(y|\theta)p(\theta)}{p(y)}.\] For to
 
 The \textit{probability} of an event is \[\int_{x-\delta}^{x+\delta}f(y)\,dy,\] while the \textit{likelihood} is just \(f(x).\)
 
-The \textit{maximum likelihood estimator} (LME) is, given \((X_n)_{i=1}^N\sim p(\cdot|\theta),\) is the parameter \begin{align*}
+The \textit{maximum likelihood estimator} (MLE) is, given \((X_n)_{i=1}^N\sim p(\cdot|\theta),\) is the parameter \begin{align*}
     \hat\theta&=\text{argmax}_\theta\prod_{i=1}^Np(X_i|\theta) \\ 
     &= \text{argmax}_\theta \lim_{\delta \to 0} \prod_{i=1}^N \frac{\P_\theta(Y\in X_i\pm\delta)}{\delta}
 \end{align*}
@@ -109,6 +109,17 @@ As we increase the amount of data we have to \(\infty\), the MAP estimator conve
         &= (1-\theta)(N_1+a-1)-\theta(N-N_1+b-1) \\
         \theta(N+a+b-2) &= N_1+a-1 \\ 
         \hat\theta_{MAP} &= \frac{N_1+a-1}{N+a+b-2}.
+    \end{align*}
+    We may also derive the MLE: \begin{align*}
+        \hat\theta_{MLE} &= \text{argmax}_{\theta\in[0,1]}\theta^{N_1}(1-\theta)^{N-N_1} \\
+        &= \text{argmax}_{\theta\in[0,1]}(N_1)\log(\theta)+(N-N_1)\log(1-\theta) \\
+    \end{align*}
+    We set \[\frac{\del \mathcal{L}(\theta)}{\del \theta}=0.\] We get \begin{align*}
+        0 &= \frac{N_1}{\theta}-\frac{N-N_1}{1-\theta} \\
+        &= (1-\theta)N_1-\theta(N-N_1) \\
+        \theta(N-N_1) &= (1-\theta)N_1\ \\
+        \theta(N) &= N_1 \\
+        \hat\theta_{MLE} &= \frac{N_1}{N}.
     \end{align*}
 \end{example*}
 \end{document}
