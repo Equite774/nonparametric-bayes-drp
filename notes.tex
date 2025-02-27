@@ -122,4 +122,59 @@ As we increase the amount of data we have to \(\infty\), the MAP estimator conve
         \hat\theta_{MLE} &= \frac{N_1}{N}.
     \end{align*}
 \end{example*}
+\section*{Day 4 - 2/27/25}
+\subsection*{Dirichlet Multinomial Model}
+\emph{Goal: generalize the Beta Binomial model}
+Recall the Beta-Binomial model: \begin{align*}
+    \theta&\sim\text{Beta}(\alpha,\beta) \\
+    X_i&\sim^{i.i.d.}\text{Binomial}(\theta) \,\fa i\in\{1:N\}\\
+\end{align*}
+Generative models, by the traditional definition, are a model for how the data is generated. For Beta-Binomial, we go top-down. We generate a \(\theta\) drawn from our prior, and then generate \(X_i\) from the likelihood.
+
+We can talk about the joint distribution, \[p\left(\theta,(X_n)_{i=0}^N\right)=p_{\text{Beta}}(\theta)\prod_{i=1}^{N}\theta^{\indic_{x_i=1}}(1-\theta)^{\indic_{x_o=0}}.\] We find the conditional distribution given the data from this.
+
+For the Dirichlet-Multinomial model, we have, for \(\alpha=(\alpha_1,\dots,\alpha_k)\in\R^k_+,\) we have \begin{align*}
+    \theta=(\theta)_{i=1}^k&\sim\text{Dirichlet}(\alpha) \\
+    X_i&\sim^{i.i.d.}\text{Cat}(\theta) \,\fa i\in\{1:N\}\\
+\end{align*}
+where \[\text{Dirichlet}(\alpha)\propto P(\theta)\alpha\prod_{c=1}^{k}\theta_c^{\alpha_c-1}\] and \[\text{Cat}(\theta)=\begin{cases}
+    x_i=c&\text{ with prob. \(\theta_c\) where \(c\in\{1:K\}\)}
+\end{cases}\] We demand \(\sum_{c=1}^{k} \theta_c=1.\) We call the \[S_k= \left\{\theta\in\R^k_+ : \sum_{c=1}^{k} \theta_c=1 \right\} \] the \(k\)-dimensional simplex. Every point on the simplex is a probability distribution.
+
+Then, the Dirichlet distribution is a \emph{distribution over distributions}, since it is a distribution over the simplex.
+
+\begin{example*}
+    The Dirichlet distribution, for \(k=2\), is \begin{align*}
+        p_{\text{Dir}(\alpha,\beta)}&\propto \theta_1^{\alpha-1}\theta_2^{\beta-1} \\
+        &= \theta_1^{\alpha-1}(1-\theta_2)^{\beta-1} \\
+        &\propto p_{\text{Beta}(\alpha,\beta)}(\theta_1) \\
+    \end{align*}
+\end{example*}
+Then, altogether, the posterior is \begin{align*}
+    p(\theta|D)&\propto p(\theta)p(D|\theta) \\
+    &\propto \prod_{c=1}^{k} \theta_c^{\alpha_c-1}\prod_{i=1}^{N}p(X_i|\theta) \\
+    &= \prod_{c=1}^{k} \theta_c^{\alpha_c-1}\prod_{i=1}^{N}\theta_c^{\indic_{x_i=c}}\qquad\text{ over all \(c\)} \\
+    &= \prod_{c=1}^{k} \theta_c^{\alpha_c+\sum_{i=1}^{N}\indic_{x_i=c}-1} \\ 
+    &= \text{Dirichlet}\left((\alpha_c+\text{num of \(c\)'s})_{c=1}^k\right) \\ 
+    &= \text{Dirichlet}\left(\alpha+\sum_{i=1}^{N}\indic_{x_i=c}\right) \\
+\end{align*}
+Now, we seek to find \begin{align*}
+    \hat\theta_{MAP}&=\text{argmax}_{\theta}p(\theta|D) \\
+    &\boxed{Exercise}
+\end{align*}
+\subsection*{Naive Bayes Classifier}
+We are trying to predict the labels \(y\) given data \(\bf x.\)
+\begin{example*}[Spam filtering]
+    Let \(\cal X\) be the symbols you can type. Let \(\mathbf{x}\in\R^d\) where \(d\) is the length of the email. Let \(y\in\{0,1\}\) where 1 indicates spam.
+
+    \textbf{Goal:} Given \(D=\{(\mathbf{x}^i,y^i)\}_{i=1}^N,\) we want to predict \(y^{N+1}\) given \(\mathbf{x}^{N+1}.\) In statistical terms, this is \[p(y^{N+1}|D,\textbf{x}^{N+1})\]
+\end{example*}
+We invoke Naive Bayes. Let \begin{align*}
+    \qquad\qquad\pi&\sim\text{Beta}(\alpha,\beta) \\
+    y&\sim\text{Bernoulli}(\pi) \\ 
+    \mathbf{x}&\sim p(\textbf {x}|y) \\ 
+    &\approx \prod_{i=1}^{d} p(x_i|y,\theta) &&\text{(where \(\theta\) is a hyperparameter)} \\
+    \text{where }x_i&\sim\text{Cat}(\theta|y) \\
+    \theta&\sim\text{Dirichlet}(\eta) \\
+\end{align*}
 \end{document}
