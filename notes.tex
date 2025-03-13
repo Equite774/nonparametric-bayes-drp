@@ -177,4 +177,69 @@ We invoke Naive Bayes. Let \begin{align*}
     \text{where }x_i&\sim\text{Cat}(\theta|y) \\
     \theta&\sim\text{Dirichlet}(\eta) \\
 \end{align*}
+\section*{Day 5 - 3/6/25}
+\subsection*{Naive Bayes Classifier (\emph{Cont.})}
+Naive Bayes is a generative model. We would like to know how the data is generated. 
+
+Again, we have \(D=\{\mathbf{x}^i, y^i\}_{i=1}^N,\) where each \(\mathbf{x}=(x_1,\dots,x_D)\) and \(y\in\{1,\dots,C\}.\) 
+
+We have that \(y\sim \text{Dir}(\pi=(\pi_1,\dots,\pi_C))\) where the Dirichlet distribution is \(\text{Dir}(\pi\in S_d)\propto \prod_{i=1}^{d}\theta_i^{\pi_i-1}\propto p(\theta)\) where \(S_d\) is the \(d\)-dimensional simplex and \(\theta\) is a point on the simplex.
+
+The parameter of our \(\emph{frequentist}\) model is \[\theta=\{\pi\in S_D, (\theta_{jc})\}\] where \begin{align*}
+    y &\sim \pi \\ 
+    x_j|y=c &\sim p(x;\theta_{jc}) \,\fa j\in\{1:D\},\,\fa c\in\{1:C\} &&\text{(Condition on both feature and label)} \\
+    *p(x,y=c;\theta) &= \pi_c\prod_{j=1}^{D}p(x_j;\theta_{jc}) &&\text{(Joint distribution)} \\
+\end{align*}
+Given some data \(D\) as defined above, we can guess the parameters (assuming Bernoulli): \begin{align*}
+    \hat{\pi}_c &= \frac{\sum_{i=1}^{N}\indic_{y^i=c}}{N} && \frac{\text{Num of class \(c\)'s in \(D\)}}{N} \\
+    \hat{\theta}_{jc} &= \frac{\sum_{i=1}^{N}\indic_{y^i=c}\indic_{x_j^i=1}}{\sum_{i=1}^{N}\indic_{y^i=c}} && \frac{\text{Num of yeses in the \(j\)th feature \(D\) of class \(c\)}}{\text{Num of \(j\)th features in class \(c\)}}\text{ if \(p(x_j;\theta_{jc})=\text{Ber}(\theta_{jc})\)} \\
+\end{align*}
+Here, we assumed some god-given parameters, and we want to choose estimators that are asymptotically close to the true parameters. 
+
+For the \emph{Bayesian} model, we have hyperparameter \[H=\{\alpha\in S_C,\beta^1_{jc},\beta^2_{jc}\}\] where \begin{align*}
+    \pi&\sim\text{Dir}(\alpha) \\
+    y&\sim\pi \\ 
+    \theta_{jc} &\sim \text{Beta}(\beta^1_{jc},\beta^2_{jc}) \,\fa j\in\{1:D\},\,\fa c\in\{1:C\} \\
+    x_j|y=c&\sim \text{Ber}(\theta_{jc}) \\
+    *p(x,y=c|\pi,\theta)&=\pi_c\prod_{j=1}^{D}p(x_j|\theta_{jc})=\pi_c\prod_{j=1}^{D} \theta_{jc}^{\indic_{x_j=1}} (1-\theta_{jc})^{\indic_{x_j=0}} \\
+\end{align*}
+Our MAP estimator is then \begin{align*}
+    p(\pi|D)&   &&\text{(posterior on \(\pi\))} \\
+    p(\theta_{jc}|D)&  &&\text{(posterior on \(\theta_{jc}\))} \\
+    p(y=c|\mathbf{x},D)&\propto p(x|y,D)p(y|D) dx &&\text{(posterior predictive)}
+\end{align*}
+\subsection*{Day 6 - 3/13/25}
+\subsubsection*{Latent Variable Models}
+In these models, we have a discrete latent state, \[z_i\in \{1,\dots,K\}.\] We can use a discrete prior, say \(p(z_i)=\text{Cat}(\mathbf{\pi}).\) For the likelihood, we can use \[p(x_i|z_i=k)=p_k(x_i),\] where \(p_k\) is the base distribution for some \(k.\) This is the mixture model, given as \[p(x_i|\theta)=\sum_{k=1}^{K} \pi_kp_k(x_i|\theta).\] Then, \(\pi\) can be thought of as a set of weights that normalize the sum \(\sum_{k=1}^{K} p_k(x|\theta).\)
+
+Now, \textbf{Gaussian mixture models} are models in which each \(p_k(x_i|\theta)=\mathcal{N}(x_i|\mu_k,\Sigma_k).\)
+
+We also have \textbf{Multinomial mixture models}, given by \[p(x_i|z_i=k,\theta)=\prod_{j=1}^{D}\text{Ber}(x_{ij}|\mu_{jk})=\prod_{j=1}^{D}\mu_{jk}^{x_{ij}}(1-\mu_{jk})^{1-x_{ij}}.\]
+\subsubsection*{Clustering}
+We would like to use mixture models to cluster data. We would like to find which cluster is ``responsible'' for each data point. That is, \[r_{ik}=p(z_i=k|x_i,\theta)=\frac{p(z_i=k|\theta)p(x_i|z_i=k,\theta)}{\sum_{k=1}^{K} p(z_i=k|\theta)p(x_i|z_i=k,\theta)}.\] Note: Finding the correct \(K\) is reserved for nonparametric Bayes, for now we say that it is God-given.
+
+We solve this by the \textbf{Expectation-Maximization} algorithm. We start with some \(\theta\), and then we iterate: \begin{enumerate}
+    \item \textbf{E-step:} We compute \(r_{ik}\) for all \(i,k.\)
+    \item \textbf{M-step:} We update \(\theta\) by maximizing the likelihood given the \(r_{ik}\) values.
+\end{enumerate}
+Intuitively, the E-step is computing which mean is the best for each datum, and the M-step is updating the means to be the best for the data.
+\vspace{4mm}
+\begin{remark}
+    As an aside, the dat ais generated as such: \begin{align*}
+        \pi\sim\text{Dir}(\alpha) \\
+        z_i\sim\text{Cat}(\pi) \\
+        (\mu_k,\Sigma_k)\sim\text{Conjugate of Normal} \\
+        x_i|z_i=k\sim \mathcal{N}(\mu_k,\Sigma_k) \\
+    \end{align*}
+\end{remark}
+\subsubsection*{Markov Chain Monte Carloc (MCMC)}
+How do we actually sample from the posterior? We use MCMC methods.
+
+Let \(\mathcal{S}\) denote the state space. Let \(\{X_i\}_{i=1}^n\) be a Markov chain with transition kernel \(P.\) That is, it satisfies \[\P(X_{n+1}=j|X_n,\dots,X_1)=\P(X_{n+1}=j|X_n)=P_{X_n,j}.\] 
+\begin{theorem*}
+    If \(\{X_i\}_{i=1}^n\) is aperiodic and irreducible, then \[\lim_{n \to \infty} \P(X\in A\subseteq\mathcal{S})=\pi(A)\] where \(A=\{x_{i}:i=1,\dots,m\}\) and \(\pi(A)=\sum_{i=1}^{m} \pi(i).\)
+\end{theorem*}
+The goal of MCMC is, given some \(\pi,\) can we construct a Markov Chain \(\{X_i\}_{i=1}^n\) such that \(\pi\) is the stationary distribution of the chain?
+
+The answer is yes, under minimal technical conditions.
 \end{document}

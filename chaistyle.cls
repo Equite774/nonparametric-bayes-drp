@@ -127,3 +127,8 @@
 \newcommand{\tbf}[1]{\ifmmode\mathbf{#1}\else\textbf{#1}\fi}
 \newcommand{\kb}[2]{\ket{#1}\!\bra{#2}}
 \newcommand{\kbone}[1]{\ket{#1}\!\bra{#1}\!}
+\newcommand{\argmax}{\arg\max}
+\newcommand{\argmin}{\arg\min}
+\newcommand{\Bias}{\text{Bias}}
+\newcommand{\Var}{\text{Var}}
+\newcommand{\Cov}{\text{Cov}}
