@@ -8,6 +8,9 @@
 
 \begin{document}
 \maketitle
+\tableofcontents
+\newpage
+\addcontentsline{toc}{section}{Day 1 - 2/6/25}
 \section*{Day 1 - 2/6/25}
 \begin{definition*}
     Let \(X_1, X_2, \dots, X_n\) be a sequence of independent and identically distributed (i.i.d.) random variables with common CDF \(F\). The \tbf{empirical distribution} function is defined as \[\hat F^n(x)=\frac{1}{n} \sum_{i=1}^n\indic_{X_i\leq x}.\]
@@ -49,6 +52,7 @@ If \(\theta\) is a function, what is \(p(\theta)\)? If you can compute it, how d
         \item MCMC - Markov Chain Monte Carlo - We can sample from the posterior distribution using MCMC methods.
     \end{enumerate}
 \end{itemize}
+\addcontentsline{toc}{section}{Day 2 - 2/13/25}
 \section*{Day 2 - 2/13/25}
 We study single-parameter models. There are four models which we will consider: binomial, normal, Poisson, and exponential.
 \begin{enumerate}[1.]
@@ -79,6 +83,7 @@ We study single-parameter models. There are four models which we will consider: 
         A prior distribution that is of the same form as the posterior is called \tbf{conjugate}.
     \end{example*}
 \end{enumerate}
+\addcontentsline{toc}{section}{Day 3 - 2/20/25}
 \section*{Day 3 - 2/20/25}
 The key will always be \[p(\theta|y)=\frac{p(y|\theta)p(\theta)}{p(y)}.\] For today, we will be using \[p(h|D)=\frac{p(D|h)p(h)}{p(D)}.\] The prior represents our information about our posterior. In many cases, the prior is uniform, which means \[p(h|D)\propto p(D|h).\] 
 
@@ -122,22 +127,24 @@ As we increase the amount of data we have to \(\infty\), the MAP estimator conve
         \hat\theta_{MLE} &= \frac{N_1}{N}.
     \end{align*}
 \end{example*}
+\addcontentsline{toc}{section}{Day 4 - 2/27/25}
 \section*{Day 4 - 2/27/25}
 \subsection*{Dirichlet Multinomial Model}
 \emph{Goal: generalize the Beta Binomial model}
+
 Recall the Beta-Binomial model: \begin{align*}
     \theta&\sim\text{Beta}(\alpha,\beta) \\
     X_i&\sim^{i.i.d.}\text{Binomial}(\theta) \,\fa i\in\{1:N\}\\
 \end{align*}
 Generative models, by the traditional definition, are a model for how the data is generated. For Beta-Binomial, we go top-down. We generate a \(\theta\) drawn from our prior, and then generate \(X_i\) from the likelihood.
 
-We can talk about the joint distribution, \[p\left(\theta,(X_n)_{i=0}^N\right)=p_{\text{Beta}}(\theta)\prod_{i=1}^{N}\theta^{\indic_{x_i=1}}(1-\theta)^{\indic_{x_o=0}}.\] We find the conditional distribution given the data from this.
+We can talk about the joint distribution, \[p\left(\theta,(X_n)_{i=0}^N\right)=p_{\text{Beta}}(\theta)\prod_{i=1}^{N}\theta^{\indic_{x_i=1}}(1-\theta)^{\indic_{x_i=0}}.\] We find the conditional distribution given the data from this.
 
 For the Dirichlet-Multinomial model, we have, for \(\alpha=(\alpha_1,\dots,\alpha_k)\in\R^k_+,\) we have \begin{align*}
     \theta=(\theta)_{i=1}^k&\sim\text{Dirichlet}(\alpha) \\
     X_i&\sim^{i.i.d.}\text{Cat}(\theta) \,\fa i\in\{1:N\}\\
 \end{align*}
-where \[\text{Dirichlet}(\alpha)\propto P(\theta)\alpha\prod_{c=1}^{k}\theta_c^{\alpha_c-1}\] and \[\text{Cat}(\theta)=\begin{cases}
+where \[\text{Dirichlet}(\alpha)\propto\prod_{c=1}^{k}\theta_c^{\alpha_c-1}\] and \[\text{Cat}(\theta)=\begin{cases}
     x_i=c&\text{ with prob. \(\theta_c\) where \(c\in\{1:K\}\)}
 \end{cases}\] We demand \(\sum_{c=1}^{k} \theta_c=1.\) We call the \[S_k= \left\{\theta\in\R^k_+ : \sum_{c=1}^{k} \theta_c=1 \right\} \] the \(k\)-dimensional simplex. Every point on the simplex is a probability distribution.
 
@@ -159,9 +166,49 @@ Then, altogether, the posterior is \begin{align*}
     &= \text{Dirichlet}\left(\alpha+\sum_{i=1}^{N}\indic_{x_i=c}\right) \\
 \end{align*}
 Now, we seek to find \begin{align*}
-    \hat\theta_{MAP}&=\text{argmax}_{\theta}p(\theta|D) \\
-    &\boxed{Exercise}
+    \hat\theta_{MAP}&=\arg\max_{\theta}p(\theta|D) \\
+    &\propto \arg\max_{\theta}\prod_{c=1}^{k} \theta_c^{\alpha_c-1+\sum_{i=1}^{N}\indic_{x_i=c}} \\
+    &= \arg\max_{\theta}\sum_{c=1}^{k}\left(\alpha_c-1+\sum_{i=1}^{N}\indic_{x_i=c}\right)\log(\theta_c) &&\left(\text{with constraint}\sum_{c=1}^{k} \theta_c=1\right).
 \end{align*}
+We use Lagrange multipliers: \begin{align*}
+    L(\theta,\lambda) &= \sum_{c=1}^{k} \left(\alpha_c-1+\sum_{i-1}^{N} \indic_{x_i=c}\right)\log(\theta_c)+\lambda\left(1-\sum_{c=1}^{k}\theta_c\right) \\
+    \frac{\del L(\theta,\lambda)}{\del \theta_c} &= \frac{\alpha_c-1+\sum_{i=1}^{N}\indic_{x_i=c}}{\theta_c}-\lambda = 0 \\ 
+    \theta_c = 0 &= \frac{\alpha_c-1+\sum_{i=1}^{N}\indic_{x_i=c}}{\lambda} \\
+    \sum_{c=1}^{k}\theta_c 1 &= \sum_{c=1}^{k} \frac{\alpha_c-1+\sum_{i=1}^{N} \indic_{x_i=c}}{\lambda} \\
+    \lambda &= \sum_{c=1}^{k} \left(\alpha_c-1+\sum_{i=1}^{N}\indic_{x_i=c}\right) \\
+    \theta_c^\text{MAP} &= \frac{\alpha_c-1+\sum_{i=1}^{N}\indic_{x_i=c}}{\sum_{\gamma=1}^{k} \left(\alpha_\gamma-1+\sum_{i=1}^{N}\indic_{x_i=\gamma}\right)}.
+\end{align*}
+\begin{example*}
+    A lifetime \( X \) of a machine is modeled by an exponential distribution with unknown parameter \( \theta \). The likelihood is \[p(x|\theta) = \theta e^{-\theta x} \quad \text{for } x \geq 0, \theta > 0.\]
+    \begin{enumerate}
+        \item[(a)] Show that the MLE is \( \hat{\theta} = \frac{1}{\bar{x}} \), where \( \bar{x} = \frac{1}{N} \sum_{i=1}^{N} x_i \).
+        \item[(b)] Suppose we observe \( X_1 = 5, X_2 = 6, X_3 = 4 \) (the lifetimes (in years) of 3 different iid machines). What is the MLE given this data?
+        \item[(c)] Assume that an expert believes \( \theta \) should have a prior distribution that is also exponential \[p(\theta) = \text{Exp}(\theta | \lambda)\] Choose the prior parameter, call it \( \hat{\lambda} \), such that \( \mathbb{E}[\theta] = 1/3 \). Hint: recall that the Gamma distribution has the form \[\text{Ga}(\theta | a, b) \propto \theta^{a-1} e^{-\theta b}\] and its mean is \( a/b \).
+        \item[(d)] What is the posterior, \( p(\theta | \mathcal{D}, \hat{\lambda}) \)?
+        \item[(e)] Is the exponential prior conjugate to the exponential likelihood?
+        \item[(f)] What is the posterior mean, \( \mathbb{E} \left[ \theta | \mathcal{D}, \hat{\lambda} \right] \)?
+        \item[(g)] Explain why the MLE and posterior mean differ. Which is more reasonable in this example?
+    \end{enumerate}
+\end{example*}
+\begin{enumerate}[(a)]
+    \item \begin{proof}
+        Since \[p(x|\theta)=\theta e^{-\theta x},\] we have \begin{align*}
+            \hat\theta^{\text{MLE}} &= \arg\max_\theta \prod_{i=1}^{N} p(x_i|\theta) \\ 
+            &= \arg\max_\theta \prod_{i=1}^{N} \theta e^{-\theta x_i} \\
+            &= \arg\max_\theta \sum_{i=1}^{N} \log(\theta) -\theta x_i\log e \\
+            &= \arg\max_\theta N\log(\theta) - \theta\sum_{i=1}^{N} x_i.
+        \end{align*}
+        Setting the derivative to zero, we find \begin{align*}
+            0 = \frac{\del }{\del \theta} N\log(\theta) - \theta\sum_{i=1}^{N} x_i &= \frac{N}{\theta}-\sum_{i=1}^{N} x_i \\
+            \frac{n}{\theta} &= \sum_{i=1}^{N} x_i \\
+            \theta &= \frac{N}{\sum_{i=1}^{N} x_i} \\
+            \hat\theta^{\text{MLE}} &= \frac{1}{\bar{x}}.
+        \end{align*}
+    \end{proof}
+    \item \begin{solution}
+        
+    \end{solution}
+\end{enumerate}
 \subsection*{Naive Bayes Classifier}
 We are trying to predict the labels \(y\) given data \(\bf x.\)
 \begin{example*}[Spam filtering]
@@ -177,6 +224,7 @@ We invoke Naive Bayes. Let \begin{align*}
     \text{where }x_i&\sim\text{Cat}(\theta|y) \\
     \theta&\sim\text{Dirichlet}(\eta) \\
 \end{align*}
+\addcontentsline{toc}{section}{Day 5 - 3/6/25}
 \section*{Day 5 - 3/6/25}
 \subsection*{Naive Bayes Classifier (\emph{Cont.})}
 Naive Bayes is a generative model. We would like to know how the data is generated. 
@@ -208,7 +256,8 @@ Our MAP estimator is then \begin{align*}
     p(\theta_{jc}|D)&  &&\text{(posterior on \(\theta_{jc}\))} \\
     p(y=c|\mathbf{x},D)&\propto p(x|y,D)p(y|D) dx &&\text{(posterior predictive)}
 \end{align*}
-\subsection*{Day 6 - 3/13/25}
+\addcontentsline{toc}{section}{Day 6 - 3/13/25}
+\section*{Day 6 - 3/13/25}
 \subsubsection*{Latent Variable Models}
 In these models, we have a discrete latent state, \[z_i\in \{1,\dots,K\}.\] We can use a discrete prior, say \(p(z_i)=\text{Cat}(\mathbf{\pi}).\) For the likelihood, we can use \[p(x_i|z_i=k)=p_k(x_i),\] where \(p_k\) is the base distribution for some \(k.\) This is the mixture model, given as \[p(x_i|\theta)=\sum_{k=1}^{K} \pi_kp_k(x_i|\theta).\] Then, \(\pi\) can be thought of as a set of weights that normalize the sum \(\sum_{k=1}^{K} p_k(x|\theta).\)
 
@@ -225,14 +274,14 @@ We solve this by the \textbf{Expectation-Maximization} algorithm. We start with 
 Intuitively, the E-step is computing which mean is the best for each datum, and the M-step is updating the means to be the best for the data.
 \vspace{4mm}
 \begin{remark}
-    As an aside, the dat ais generated as such: \begin{align*}
+    As an aside, the data is generated as such: \begin{align*}
         \pi\sim\text{Dir}(\alpha) \\
         z_i\sim\text{Cat}(\pi) \\
         (\mu_k,\Sigma_k)\sim\text{Conjugate of Normal} \\
         x_i|z_i=k\sim \mathcal{N}(\mu_k,\Sigma_k) \\
     \end{align*}
 \end{remark}
-\subsubsection*{Markov Chain Monte Carloc (MCMC)}
+\subsubsection*{Markov Chain Monte Carlo (MCMC)}
 How do we actually sample from the posterior? We use MCMC methods.
 
 Let \(\mathcal{S}\) denote the state space. Let \(\{X_i\}_{i=1}^n\) be a Markov chain with transition kernel \(P.\) That is, it satisfies \[\P(X_{n+1}=j|X_n,\dots,X_1)=\P(X_{n+1}=j|X_n)=P_{X_n,j}.\] 
@@ -242,4 +291,61 @@ Let \(\mathcal{S}\) denote the state space. Let \(\{X_i\}_{i=1}^n\) be a Markov 
 The goal of MCMC is, given some \(\pi,\) can we construct a Markov Chain \(\{X_i\}_{i=1}^n\) such that \(\pi\) is the stationary distribution of the chain?
 
 The answer is yes, under minimal technical conditions.
+\addcontentsline{toc}{section}{Day 7 - 3/20/25}
+\section*{Day 7 - 3/20/25}
+\subsection*{Markov Chains}
+Let \(\Omega\) be some finite set. Then \(X=\{X_t\}_{t=1}^\infty\) is a \emph{Markov chain} if  \[\P(X_{t+1}=x_{t+1}|X_t=x_t,\dots,X_1=x_1)=\P(X_{t+1}=x_{t+1}|X_n=x_n).\] We call a probability distribution \(\pi\in P(\Omega)\) is a \emph{stationary distribution} if \[X_0\sim\pi\implies X_1\sim\pi.\] That is, \begin{align*}
+    \P(X_0=i)=\pi(i)=\P(X_1=i)&=\sum_{j\in\Omega} \P(X_1=i|X_0=j)\P(X_0=j) \\ 
+    &= \sum_{j\in\Omega} \P(X_1=i|X_0=j)\pi(j).
+\end{align*}
+
+\emph{Question:} (Existence) When does \(X\) have a stationary distribution?
+
+\emph{Question:} (Convergence) When does \(X_t\to\pi\) in distribution? That is, when does \(\lim_{t \to \infty} \P(X_t=i)=\pi(i).\)
+
+\emph{Answer:} (Existence) If \(X\) is positive recurrent, i.e. for \[\tau_i=\inf\{t>0:X_t\text{ returns to }i\}\] then \[\E[\tau_i]<\infty\,\fa i.\] That is, the expected time to return is finite.
+
+\emph{Answer:} (Convergence) 
+\subsubsection*{Time Reversal}
+\begin{proposition*}
+    Time-reversed Markov chains are Markovian. That is, if \(X\) is a Markov chain, then \[\P(X_{t-1}=i|X_t,X_{t+1},\dots,X_T)=\P(X_{t-1}=i|X_t).\]
+\end{proposition*}
+\begin{proof}
+    \begin{align*}
+        \P(X_{t-1}=i|X_t,X_{t+1},\dots,X_T) &= \frac{\P(X_t=x_t,\dots,X_T=x_T|X_{t-1}=i)\P(X_{t-1}=i)}{\sum_{y\in\Omega}} \\
+        &\boxed{Exercise.}
+    \end{align*}
+\end{proof}
+If \(X_0\sim\pi,\) then \begin{align*}
+    \P(X_0=i|X_1=j) &= \frac{\P(x_1=j|X_0=i)\P(X_0=i)}{\P(X_1=j)} \\ 
+    &= \frac{\P(X_1=j|X_0=i)\pi(i)}{\pi(j)} \\ 
+    \P(X_0=i|X_1=j)\pi(j) &= \P(X_1=j|X_0=i)\pi(i).
+\end{align*}
+Let us say that \(\P(X_0=i|X_1=j)=p^\leftarrow_{ji}\) and \(\P(X_1=j|X_0=i)=p^\rightarrow_{ij}.\) Then, we have \[\pi(j)p^\leftarrow_{ji}=\pi(i)p^\rightarrow_{ij}.\] If we demand that \(p^\rightarrow = p^\leftarrow,\) then we have a condition called \emph{detailed balance} which is that \[\pi(j)p_{ji}=\pi(i)p_{ij}.\]
+\subsection*{Gibbs Sampling}
+Previously we were given a Markov chain and we wanted to find the stationary distribution. Now, we are given a stationary distribution and we wish to find a Markov chain \(X\) such that \(X_t\to\pi.\)
+
+Let a graph \(G=(V,E),\) with \(\cal S\) as the set of states each vertex can take. Let \(\Omega=\mathcal{S}^V\) be the total set of states the system can be in. Let \[x_{-v}=(x_1,\dots,x_{v-1},v_{v+1},\dots,x_{|V})\]
+\begin{definition*}
+    Given \(\pi\in P(\Omega),\) define \(X\) to be:
+    \begin{algorithm}
+    \caption{Glauber Dynamics}
+    \begin{algorithmic}
+        \STATE \(X_t=x\in\Omega\)
+        \STATE Sample \(v\sim\text{Unif}\{1,2,\dots,|V|\}\)
+        \STATE Sample \(X_{t+1}\sim\gamma_{x,v}\) where \(\gamma_{x,v}(y)=\pi(y|y_{-v}=x_{-v})=\pi(y_v|y_{-v}=x_{-v})=\frac{\pi(y)}{\pi(x_{-v})}\)
+    \end{algorithmic}
+    \end{algorithm}
+    \newpage
+\end{definition*}
+\begin{example*}[Sampling from a Gaussian]
+    Let \(\pi(x)\sim\mathcal{N}(0,\Sigma)\) where \(\Sigma\in\R^{d\times d}.\) Say that \(\mathcal{S}=\R,\) and \(G\) is a complete graph. Then \begin{enumerate}
+        \item \(X_0=0\in\R^d.\)
+        \item Pick \(i\) from \(1:d\) uniformly.
+        \item Let \(Z\sim\N(0,\Sigma)\) Call \(X_t=x.\) \[y\sim\P(Z_i=y|Z_{-i}=x_{-i}).\] (This is sampling from a univariate distribution which we can do by the Inverse CDF method)
+        \item \(X_t=(x_1,\dots,x_{i-1},y,x_{x+1},\dots,x_d)\)
+        \item \(\lim_{t \to \infty} X_t=\pi.\)
+    \end{enumerate}
+\end{example*}
+\boxed{\text{Implement } 24.2.3.}
 \end{document}

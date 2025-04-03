@@ -132,3 +132,5 @@
 \newcommand{\Bias}{\text{Bias}}
 \newcommand{\Var}{\text{Var}}
 \newcommand{\Cov}{\text{Cov}}
+\newcommand{\abs}[1]{\left|{#1}\right|}
+\newcommand{\norm}[1]{\left\|{#1}\right\|}
